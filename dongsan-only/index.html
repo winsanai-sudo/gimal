@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026 동산고 수학 시험 캘린더</title>
+  <style>
+    :root {
+      --paper: #ffffff;
+      --ink: #1f2328;
+      --muted: #667085;
+      --line: #d9e1ea;
+      --page: #eef4f7;
+      --math: #d83f5f;
+      --math-soft: #fff0f4;
+      --direct: #10131b;
+      --direct-hot: #f7ff54;
+      --direct-cool: #20e8d6;
+      --period: #168b7c;
+      --period-soft: #ecfbf6;
+      --end: #4f5fc4;
+      --end-soft: #f1f3ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(135deg, rgba(32, 232, 214, 0.15), rgba(247, 255, 84, 0.12) 42%, rgba(216, 63, 95, 0.10)),
+        var(--page);
+      color: var(--ink);
+      font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 28px auto;
+      padding: 24px;
+      border: 1px solid rgba(31, 35, 40, 0.08);
+      border-radius: 18px;
+      background: var(--paper);
+      box-shadow: 0 18px 45px rgba(39, 50, 72, 0.14);
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: end;
+      padding-bottom: 18px;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.16;
+      font-weight: 900;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      max-width: 460px;
+    }
+
+    .summary-pill,
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid #e4e9ef;
+      background: #fafbfc;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--period);
+    }
+
+    .dot.math {
+      background: var(--math);
+    }
+
+    .dot.direct {
+      background: linear-gradient(135deg, var(--direct-hot), var(--direct-cool));
+      box-shadow: 0 0 0 2px var(--direct);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0 14px;
+    }
+
+    .legend .math-label {
+      color: #9d1733;
+      background: var(--math-soft);
+      border-color: #fac9d3;
+    }
+
+    .legend .direct-label {
+      color: var(--direct);
+      background: var(--direct-hot);
+      border: 2px solid var(--direct);
+      box-shadow: inset 0 -4px 0 rgba(32, 232, 214, 0.6);
+    }
+
+    .legend .period-label {
+      color: #0c6d5e;
+      background: var(--period-soft);
+      border-color: #bce9dd;
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .day {
+      min-height: 255px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #ffffff;
+    }
+
+    .date-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      min-height: 34px;
+    }
+
+    .date {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      font-weight: 900;
+    }
+
+    .date strong {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .date small {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .badge {
+      flex: 0 0 auto;
+      padding: 5px 8px;
+      border-radius: 999px;
+      color: #ffffff;
+      background: var(--period);
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .event {
+      width: 100%;
+      border-radius: 8px;
+      padding: 7px 8px;
+      font-size: 13px;
+      line-height: 1.25;
+      font-weight: 900;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+
+    .event.math {
+      color: #8f1230;
+      background: var(--math-soft);
+      border: 1px solid #f7bfd0;
+    }
+
+    .event.direct {
+      color: var(--direct-hot);
+      background:
+        linear-gradient(135deg, #10131b 0%, #10131b 63%, rgba(32, 232, 214, 0.22) 100%);
+      border: 2px solid var(--direct-cool);
+      box-shadow: 0 0 0 2px rgba(247, 255, 84, 0.72), 0 8px 18px rgba(16, 19, 27, 0.22);
+      font-size: 13px;
+    }
+
+    .event.direct::before {
+      content: "직보";
+      display: inline-flex;
+      margin-right: 6px;
+      padding: 2px 5px;
+      border-radius: 999px;
+      color: #10131b;
+      background: var(--direct-hot);
+      font-size: 10px;
+      font-weight: 900;
+      vertical-align: 1px;
+    }
+
+    .event.start {
+      color: #0c6d5e;
+      background: var(--period-soft);
+      border: 1px solid #bce9dd;
+    }
+
+    .event.end {
+      color: #34419a;
+      background: var(--end-soft);
+      border: 1px solid #cbd2ff;
+    }
+
+    .active-list {
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .active-title {
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .school-chip {
+      padding: 5px 7px;
+      border-radius: 999px;
+      color: #0f6f62;
+      background: var(--period-soft);
+      border: 1px solid #c8ece3;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .school-table {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .school-row {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr 1.35fr 1.4fr 0.72fr;
+      min-height: 42px;
+      border-top: 1px solid #e8edf3;
+      background: #ffffff;
+    }
+
+    .school-row:first-child {
+      border-top: 0;
+      background: #f8fafc;
+      color: #4a5563;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .school-row > div {
+      display: flex;
+      align-items: center;
+      padding: 10px 11px;
+      border-left: 1px solid #e8edf3;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.3;
+      word-break: keep-all;
+    }
+
+    .school-row > div:first-child {
+      border-left: 0;
+      font-weight: 900;
+    }
+
+    .status {
+      display: inline-flex;
+      justify-content: center;
+      min-width: 54px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      color: #0c6d5e;
+      background: var(--period-soft);
+      border: 1px solid #bce9dd;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        width: calc(100% - 20px);
+        margin: 10px auto;
+        padding: 14px;
+        border-radius: 12px;
+      }
+
+      header {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+
+      .summary {
+        justify-content: flex-start;
+      }
+
+      .calendar {
+        grid-template-columns: 1fr;
+      }
+
+      .day {
+        min-height: 0;
+      }
+
+      .school-row {
+        grid-template-columns: 1fr;
+      }
+
+      .school-row:first-child {
+        display: none;
+      }
+
+      .school-row > div {
+        border-left: 0;
+        border-top: 1px solid #e8edf3;
+      }
+
+      .school-row > div:first-child {
+        border-top: 0;
+        background: #f8fafc;
+      }
+
+      footer {
+        flex-direction: column;
+      }
+    }
+
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 10mm;
+      }
+
+      body {
+        background: #ffffff;
+      }
+
+      main {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+  <style>
+    :root {
+      --paper: #fffdfa;
+      --ink: #171a1f;
+      --muted: #667085;
+      --line: #cfd8e3;
+      --page: #edf1f5;
+      --math: #c92f54;
+      --math-soft: #fff2f5;
+      --direct: #10131b;
+      --direct-hot: #f5ff3d;
+      --direct-cool: #16dfcf;
+      --period: #087f72;
+      --period-soft: #effaf7;
+      --end: #4554b8;
+      --end-soft: #f2f4ff;
+    }
+
+    body {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.86), rgba(237,241,245,0.94)),
+        repeating-linear-gradient(90deg, rgba(23,26,31,0.035) 0 1px, transparent 1px 96px),
+        repeating-linear-gradient(0deg, rgba(23,26,31,0.025) 0 1px, transparent 1px 96px),
+        var(--page);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    main {
+      width: min(1160px, calc(100% - 28px));
+      margin: 18px auto;
+      padding: 22px;
+      border: 1px solid rgba(23, 26, 31, 0.12);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffffff 0%, var(--paper) 100%);
+      box-shadow: 0 22px 50px rgba(23, 34, 51, 0.16);
+    }
+
+    header {
+      grid-template-columns: minmax(0, 1fr) minmax(300px, auto);
+      align-items: center;
+      gap: 22px;
+      padding: 2px 2px 18px;
+      border-bottom: 3px solid var(--ink);
+    }
+
+    h1 {
+      font-size: 32px;
+      line-height: 1.08;
+    }
+
+    .subtitle {
+      color: #586171;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .summary {
+      max-width: 420px;
+      gap: 7px;
+    }
+
+    .summary-pill,
+    .legend span {
+      border: 1px solid #dfe5ed;
+      background: #ffffff;
+      box-shadow: 0 1px 0 rgba(23, 26, 31, 0.05);
+      color: #252a32;
+    }
+
+    .legend {
+      margin: 14px 0 12px;
+      gap: 7px;
+    }
+
+    .calendar {
+      gap: 10px;
+    }
+
+    .day {
+      min-height: 270px;
+      padding: 14px;
+      gap: 9px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 1px 0 rgba(23, 26, 31, 0.06);
+    }
+
+    .date strong {
+      font-size: 28px;
+    }
+
+    .date small {
+      color: #697386;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .badge {
+      background: #1d2939;
+      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.16);
+    }
+
+    .event {
+      border-radius: 6px;
+      padding: 8px 9px;
+      font-size: 12.5px;
+      line-height: 1.28;
+      box-shadow: inset 3px 0 0 currentColor;
+    }
+
+    .event.direct {
+      color: #f9ff5e;
+      background:
+        linear-gradient(90deg, rgba(22,223,207,0.24), transparent 42%),
+        #10131b;
+      border: 1px solid #10131b;
+      box-shadow:
+        inset 0 0 0 1px rgba(245,255,61,0.36),
+        inset 4px 0 0 var(--direct-cool),
+        0 9px 20px rgba(16, 19, 27, 0.24);
+    }
+
+    .school-table {
+      border-radius: 8px;
+      border-color: #cbd5e1;
+      box-shadow: 0 1px 0 rgba(23, 26, 31, 0.06);
+    }
+
+    .school-row {
+      border-top-color: #e3e9f0;
+    }
+
+    .school-row:first-child {
+      background: #111827;
+      color: #ffffff;
+    }
+
+    .school-row > div {
+      border-left-color: #e3e9f0;
+    }
+
+    footer {
+      color: #697386;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        width: calc(100% - 18px);
+        padding: 12px;
+      }
+
+      header {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      .day {
+        min-height: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>2026 동산고 수학 시험 캘린더</h1>
+        <div class="subtitle">6월 30일 화요일 ~ 7월 3일 금요일</div>
+      </div>
+      <div class="summary" aria-label="요약">
+        <div class="summary-pill"><span class="dot math"></span>수학 확정 3건</div>
+        <div class="summary-pill"><span class="dot direct"></span>직보 3건</div>
+        <div class="summary-pill"><span class="dot"></span>시험기간 2건</div>
+      </div>
+    </header>
+
+    <section class="legend" aria-label="범례">
+      <span class="math-label">수학 시험</span>
+      <span class="direct-label">직보</span>
+      <span class="period-label">시험기간</span>
+    </section>
+
+    <section class="calendar" aria-label="동산고 시험 캘린더">
+      <article class="day">
+        <div class="date-line"><div class="date"><strong>30</strong><small>6월 화</small></div><span class="badge">직보</span></div>
+        <div class="event direct">동산고 1학년 공통수학1 오후 1시~5시</div>
+        <div class="event start">시험 시작: 동산고 1학년, 동산고 2학년</div>
+        <div class="active-list">
+          <div class="active-title">시험기간</div>
+          <div class="chips">
+            <span class="school-chip">동산고 1학년</span><span class="school-chip">동산고 2학년</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="day">
+        <div class="date-line"><div class="date"><strong>1</strong><small>7월 수</small></div><span class="badge">시험+직보</span></div>
+        <div class="event math">동산고 1학년 공통수학1 시험</div>
+        <div class="event direct">동산고 2학년 미적분1 오후 6시~10시</div>
+        <div class="active-list">
+          <div class="active-title">시험기간</div>
+          <div class="chips">
+            <span class="school-chip">동산고 1학년</span><span class="school-chip">동산고 2학년</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="day">
+        <div class="date-line"><div class="date"><strong>2</strong><small>7월 목</small></div><span class="badge">시험+직보</span></div>
+        <div class="event math">동산고 2학년 미적분1 시험</div>
+        <div class="event direct">동산고 1학년 공통수학2 오후 1시~5시</div>
+        <div class="active-list">
+          <div class="active-title">시험기간</div>
+          <div class="chips">
+            <span class="school-chip">동산고 1학년</span><span class="school-chip">동산고 2학년</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="day">
+        <div class="date-line"><div class="date"><strong>3</strong><small>7월 금</small></div><span class="badge">시험 종료</span></div>
+        <div class="event math">동산고 1학년 공통수학2 시험</div>
+        <div class="event end">시험 종료: 동산고 1학년, 동산고 2학년</div>
+        <div class="active-list">
+          <div class="active-title">시험기간</div>
+          <div class="chips">
+            <span class="school-chip">동산고 1학년</span><span class="school-chip">동산고 2학년</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="school-table" aria-label="학교별 일정">
+      <div class="school-row">
+        <div>대상</div>
+        <div>시험 기간</div>
+        <div>수학 시험</div>
+        <div>직보</div>
+        <div>상태</div>
+      </div>
+      <div class="school-row"><div>동산고 1학년</div><div>6월 30일~7월 3일</div><div>7월 1일 공통수학1<br>7월 3일 공통수학2</div><div>6월 30일 오후 1시~5시<br>7월 2일 오후 1시~5시</div><div><span class="status">확정</span></div></div>
+      <div class="school-row"><div>동산고 2학년</div><div>6월 30일~7월 3일</div><div>7월 2일 미적분1</div><div>7월 1일 오후 6시~10시</div><div><span class="status">확정</span></div></div>
+    </section>
+
+    <footer>
+      <div>업데이트: 2026년 6월 13일</div>
+      <div>동산고 전용 보기</div>
+    </footer>
+  </main>
+</body>
+</html>
