@@ -1,0 +1,1137 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026 학교 수학 시험 캘린더</title>
+  <style>
+    :root {
+      --paper: #ffffff;
+      --ink: #20242a;
+      --muted: #6b7280;
+      --line: #d7dde5;
+      --soft-line: #e9edf2;
+      --page: #eef2f6;
+      --math: #d83f5f;
+      --math-soft: #fff0f4;
+      --period: #1f9c8a;
+      --period-soft: #ecfbf6;
+      --start: #d88715;
+      --start-soft: #fff6df;
+      --end: #5768c9;
+      --end-soft: #f1f3ff;
+      --unknown: #565d68;
+      --unknown-soft: #f2f4f7;
+      --weekend: #f7f9fb;
+      --direct: #10131b;
+      --direct-hot: #f7ff54;
+      --direct-cool: #20e8d6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(135deg, rgba(31, 156, 138, 0.12), rgba(216, 63, 95, 0.08) 46%, rgba(87, 104, 201, 0.10)),
+        var(--page);
+      color: var(--ink);
+      font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 28px auto;
+      padding: 24px;
+      border: 1px solid rgba(32, 36, 42, 0.08);
+      border-radius: 18px;
+      background: var(--paper);
+      box-shadow: 0 18px 45px rgba(39, 50, 72, 0.14);
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: end;
+      padding-bottom: 18px;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.16;
+      font-weight: 900;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      max-width: 420px;
+    }
+
+    .summary-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--soft-line);
+      background: #fafbfc;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--period);
+    }
+
+    .dot.math {
+      background: var(--math);
+    }
+
+    .dot.unknown {
+      background: var(--unknown);
+    }
+
+    .dot.direct {
+      background: linear-gradient(135deg, var(--direct-hot), var(--direct-cool));
+      box-shadow: 0 0 0 2px #10131b;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0 14px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .legend .math-label {
+      color: #9d1733;
+      background: var(--math-soft);
+      border: 1px solid #fac9d3;
+    }
+
+    .legend .period-label {
+      color: #0c6d5e;
+      background: var(--period-soft);
+      border: 1px solid #bce9dd;
+    }
+
+    .legend .start-label {
+      color: #9a5a00;
+      background: var(--start-soft);
+      border: 1px solid #f3d59a;
+    }
+
+    .legend .end-label {
+      color: #3946a0;
+      background: var(--end-soft);
+      border: 1px solid #ccd2ff;
+    }
+
+    .legend .direct-label {
+      color: #10131b;
+      background: #f7ff54;
+      border: 2px solid #10131b;
+      box-shadow: inset 0 -4px 0 rgba(32, 232, 214, 0.6);
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--line);
+    }
+
+    .weekday {
+      min-height: 36px;
+      display: grid;
+      place-items: center;
+      background: #f8fafc;
+      color: #4a5563;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .weekday.sun {
+      color: #c83d55;
+    }
+
+    .weekday.sat {
+      color: #4254bc;
+    }
+
+    .day {
+      min-height: 168px;
+      padding: 10px;
+      background: var(--paper);
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .day.weekend {
+      background: var(--weekend);
+    }
+
+    .day.outside {
+      color: #9aa3af;
+      background: #f9fafb;
+    }
+
+    .date-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      min-height: 30px;
+      gap: 8px;
+    }
+
+    .date {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      font-weight: 900;
+    }
+
+    .date strong {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .date small {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .badge {
+      flex: 0 0 auto;
+      padding: 4px 7px;
+      border-radius: 999px;
+      color: #ffffff;
+      background: var(--period);
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .badge.quiet {
+      color: #697386;
+      background: #edf1f5;
+    }
+
+    .math-list,
+    .direct-list,
+    .note-list,
+    .active-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .event {
+      width: 100%;
+      border-radius: 8px;
+      padding: 6px 7px;
+      font-size: 12px;
+      line-height: 1.25;
+      font-weight: 900;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+
+    .event.math {
+      color: #8f1230;
+      background: var(--math-soft);
+      border: 1px solid #f7bfd0;
+    }
+
+    .event.direct {
+      position: relative;
+      color: var(--direct-hot);
+      background:
+        linear-gradient(135deg, #10131b 0%, #10131b 63%, rgba(32, 232, 214, 0.22) 100%);
+      border: 2px solid var(--direct-cool);
+      box-shadow: 0 0 0 2px rgba(247, 255, 84, 0.72), 0 8px 18px rgba(16, 19, 27, 0.22);
+      font-size: 12.5px;
+    }
+
+    .event.direct::before {
+      content: "직보";
+      display: inline-flex;
+      margin-right: 6px;
+      padding: 2px 5px;
+      border-radius: 999px;
+      color: #10131b;
+      background: var(--direct-hot);
+      font-size: 10px;
+      font-weight: 900;
+      vertical-align: 1px;
+    }
+
+    .event.note {
+      color: #334155;
+      background: #f5f7fa;
+      border: 1px solid var(--soft-line);
+      font-weight: 800;
+    }
+
+    .event.start {
+      color: #845000;
+      background: var(--start-soft);
+      border-color: #f0d096;
+    }
+
+    .event.end {
+      color: #34419a;
+      background: var(--end-soft);
+      border-color: #cbd2ff;
+    }
+
+    .active-list {
+      margin-top: auto;
+      padding-top: 7px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .active-title {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .school-chip {
+      padding: 4px 6px;
+      border-radius: 999px;
+      background: var(--period-soft);
+      color: #0f6f62;
+      border: 1px solid #c8ece3;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .school-chip.unknown {
+      color: #424a55;
+      background: var(--unknown-soft);
+      border-color: #d8dee7;
+    }
+
+    .school-table {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .school-row {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr 1.25fr 1.35fr 0.72fr;
+      min-height: 42px;
+      border-top: 1px solid var(--soft-line);
+      background: #ffffff;
+    }
+
+    .school-row:first-child {
+      border-top: 0;
+      background: #f8fafc;
+      color: #4a5563;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .school-row > div {
+      display: flex;
+      align-items: center;
+      padding: 9px 11px;
+      border-left: 1px solid var(--soft-line);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.25;
+      word-break: keep-all;
+    }
+
+    .school-row > div:first-child {
+      border-left: 0;
+      font-weight: 900;
+    }
+
+    .status {
+      display: inline-flex;
+      justify-content: center;
+      min-width: 54px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .status.done {
+      color: #0c6d5e;
+      background: var(--period-soft);
+      border: 1px solid #bce9dd;
+    }
+
+    .status.todo {
+      color: #424a55;
+      background: var(--unknown-soft);
+      border: 1px solid #d8dee7;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 920px) {
+      main {
+        width: calc(100% - 20px);
+        margin: 10px auto;
+        padding: 14px;
+        border-radius: 12px;
+      }
+
+      header {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+
+      .summary {
+        justify-content: flex-start;
+        max-width: none;
+      }
+
+      .calendar {
+        display: block;
+        border-radius: 12px;
+        background: transparent;
+        border: 0;
+      }
+
+      .weekday {
+        display: none;
+      }
+
+      .day {
+        min-height: 0;
+        margin-bottom: 10px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+      }
+
+      .day.outside {
+        display: none;
+      }
+
+      .school-row {
+        grid-template-columns: 1fr;
+      }
+
+      .school-row:first-child {
+        display: none;
+      }
+
+      .school-row > div {
+        border-left: 0;
+        border-top: 1px solid var(--soft-line);
+      }
+
+      .school-row > div:first-child {
+        border-top: 0;
+        background: #f8fafc;
+      }
+
+      footer {
+        flex-direction: column;
+      }
+    }
+
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 9mm;
+      }
+
+      body {
+        background: #ffffff;
+      }
+
+      main {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      header {
+        padding-bottom: 10px;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      .subtitle {
+        font-size: 13px;
+      }
+
+      .legend {
+        margin: 10px 0;
+      }
+
+      .day {
+        min-height: 137px;
+        padding: 7px;
+        gap: 5px;
+      }
+
+      .event {
+        padding: 5px 6px;
+        font-size: 10.5px;
+      }
+
+      .event.direct {
+        font-size: 10.5px;
+      }
+
+      .school-chip {
+        font-size: 9.5px;
+        padding: 3px 5px;
+      }
+
+      .school-table {
+        margin-top: 10px;
+      }
+
+      .school-row {
+        min-height: 31px;
+      }
+
+      .school-row > div {
+        padding: 5px 8px;
+        font-size: 10.5px;
+      }
+
+      footer {
+        margin-top: 8px;
+        font-size: 10px;
+      }
+    }
+  </style>
+<style>
+    :root {
+      --paper: #fffdfa;
+      --ink: #171a1f;
+      --muted: #6a7280;
+      --line: #cfd8e3;
+      --soft-line: #e8edf3;
+      --page: #edf1f5;
+      --math: #c92f54;
+      --math-soft: #fff2f5;
+      --period: #087f72;
+      --period-soft: #effaf7;
+      --start: #b86800;
+      --start-soft: #fff6df;
+      --end: #4554b8;
+      --end-soft: #f2f4ff;
+      --unknown: #5d6572;
+      --unknown-soft: #f2f4f7;
+      --weekend: #f8fafc;
+      --direct: #10131b;
+      --direct-hot: #f5ff3d;
+      --direct-cool: #16dfcf;
+    }
+
+    body {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.86), rgba(237,241,245,0.94)),
+        repeating-linear-gradient(90deg, rgba(23,26,31,0.035) 0 1px, transparent 1px 96px),
+        repeating-linear-gradient(0deg, rgba(23,26,31,0.025) 0 1px, transparent 1px 96px),
+        var(--page);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    main {
+      width: min(1240px, calc(100% - 28px));
+      margin: 18px auto;
+      padding: 22px;
+      border: 1px solid rgba(23, 26, 31, 0.12);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffffff 0%, var(--paper) 100%);
+      box-shadow: 0 22px 50px rgba(23, 34, 51, 0.16);
+    }
+
+    header {
+      grid-template-columns: minmax(0, 1fr) minmax(320px, auto);
+      align-items: center;
+      gap: 22px;
+      padding: 2px 2px 18px;
+      border-bottom: 3px solid var(--ink);
+    }
+
+    h1 {
+      font-size: 32px;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin-top: 9px;
+      color: #586171;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .summary {
+      max-width: 520px;
+      gap: 7px;
+    }
+
+    .summary-pill {
+      min-height: 32px;
+      padding: 7px 11px;
+      border: 1px solid #dfe5ed;
+      border-radius: 999px;
+      background: #ffffff;
+      box-shadow: 0 1px 0 rgba(23, 26, 31, 0.05);
+      color: #252a32;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+    }
+
+    .legend {
+      margin: 14px 0 12px;
+      gap: 7px;
+    }
+
+    .legend span {
+      min-height: 28px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      letter-spacing: 0;
+      box-shadow: 0 1px 0 rgba(23, 26, 31, 0.04);
+    }
+
+    .calendar {
+      border: 1px solid #c9d3df;
+      border-radius: 8px;
+      background: #c9d3df;
+      box-shadow: 0 1px 0 rgba(23, 26, 31, 0.08);
+    }
+
+    .weekday {
+      min-height: 34px;
+      background: linear-gradient(180deg, #f7f9fb, #eef3f7);
+      color: #4b5563;
+      font-size: 12px;
+      letter-spacing: 0;
+      border-bottom: 1px solid #dbe3ec;
+    }
+
+    .day {
+      min-height: 194px;
+      padding: 11px;
+      gap: 7px;
+      background: #ffffff;
+    }
+
+    .day.weekend {
+      background: #fbfcfe;
+    }
+
+    .day.outside {
+      background: #f4f7fa;
+      color: #9aa3af;
+    }
+
+    .date-line {
+      min-height: 32px;
+      align-items: center;
+    }
+
+    .date {
+      gap: 5px;
+    }
+
+    .date strong {
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    .date small {
+      color: #697386;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .badge {
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: #1d2939;
+      font-size: 10.5px;
+      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.16);
+    }
+
+    .badge.quiet {
+      color: #667085;
+      background: #e9eef4;
+      box-shadow: none;
+    }
+
+    .event {
+      border-radius: 6px;
+      padding: 7px 8px;
+      font-size: 11.5px;
+      line-height: 1.28;
+      letter-spacing: 0;
+      box-shadow: inset 3px 0 0 currentColor;
+    }
+
+    .event.math {
+      color: #9e1736;
+      background: var(--math-soft);
+      border: 1px solid #f4c3cf;
+    }
+
+    .event.direct {
+      color: #f9ff5e;
+      background:
+        linear-gradient(90deg, rgba(22,223,207,0.24), transparent 42%),
+        #10131b;
+      border: 1px solid #10131b;
+      box-shadow:
+        inset 0 0 0 1px rgba(245,255,61,0.36),
+        inset 4px 0 0 var(--direct-cool),
+        0 9px 20px rgba(16, 19, 27, 0.24);
+      font-size: 12px;
+    }
+
+    .event.direct::before {
+      margin-right: 7px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: var(--direct-hot);
+      color: #10131b;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.28);
+    }
+
+    .event.note {
+      color: #344054;
+      background: #f7f9fc;
+      border: 1px solid #e4eaf1;
+      font-weight: 850;
+    }
+
+    .event.start {
+      color: #8a4f00;
+      background: #fff7e6;
+      border: 1px solid #f0d39a;
+    }
+
+    .event.end {
+      color: #34419a;
+      background: #f2f4ff;
+      border: 1px solid #cbd2ff;
+    }
+
+    .active-list {
+      padding-top: 8px;
+      border-top: 1px solid #e5ebf2;
+    }
+
+    .active-title {
+      color: #7a8492;
+      font-size: 10px;
+      letter-spacing: 0;
+    }
+
+    .chips {
+      gap: 4px;
+    }
+
+    .school-chip {
+      padding: 4px 6px;
+      border-radius: 999px;
+      background: #eefaf7;
+      border-color: #c6e8df;
+      color: #087264;
+      font-size: 10.5px;
+    }
+
+    .school-chip.unknown {
+      color: #46505c;
+      background: #f2f4f7;
+      border-color: #d8dee7;
+    }
+
+    .school-table {
+      margin-top: 18px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      box-shadow: 0 1px 0 rgba(23, 26, 31, 0.06);
+    }
+
+    .school-row {
+      grid-template-columns: 0.9fr 1.02fr 1.28fr 1.42fr 0.64fr;
+      min-height: 40px;
+      border-top: 1px solid #e3e9f0;
+    }
+
+    .school-row:nth-child(odd):not(:first-child) {
+      background: #fbfcfe;
+    }
+
+    .school-row:first-child {
+      background: #111827;
+      color: #ffffff;
+      font-size: 11.5px;
+    }
+
+    .school-row > div {
+      padding: 9px 10px;
+      border-left: 1px solid #e3e9f0;
+      font-size: 12.5px;
+      line-height: 1.28;
+    }
+
+    .school-row:first-child > div {
+      border-left-color: rgba(255,255,255,0.16);
+    }
+
+    .status {
+      min-width: 52px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+    }
+
+    footer {
+      margin-top: 12px;
+      color: #697386;
+      font-size: 11.5px;
+    }
+
+    @media (max-width: 920px) {
+      main {
+        width: calc(100% - 18px);
+        padding: 12px;
+      }
+
+      header {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      .day {
+        padding: 11px;
+        border-radius: 8px;
+      }
+
+      .school-row > div:first-child {
+        background: #f3f6fa;
+      }
+    }
+
+    @media print {
+      main {
+        box-shadow: none;
+      }
+
+      .day {
+        min-height: 146px;
+      }
+
+      .event {
+        font-size: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>2026 학교 수학 시험 캘린더</h1>
+        <div class="subtitle">6월 24일 수요일 ~ 7월 3일 금요일</div>
+      </div>
+      <div class="summary" aria-label="요약">
+        <div class="summary-pill"><span class="dot math"></span>수학 확정 9건</div>
+        <div class="summary-pill"><span class="dot direct"></span>직보 9건</div>
+        <div class="summary-pill"><span class="dot"></span>시험기간 9건</div>
+        <div class="summary-pill"><span class="dot unknown"></span>미정 없음</div>
+      </div>
+    </header>
+
+    <section class="legend" aria-label="범례">
+      <span class="math-label">수학 시험</span>
+      <span class="direct-label">직보</span>
+      <span class="period-label">시험기간</span>
+      <span class="start-label">시험 시작</span>
+      <span class="end-label">시험 종료</span>
+    </section>
+
+    <section class="calendar" aria-label="2026년 시험 캘린더">
+      <div class="weekday sun">일</div>
+      <div class="weekday">월</div>
+      <div class="weekday">화</div>
+      <div class="weekday">수</div>
+      <div class="weekday">목</div>
+      <div class="weekday">금</div>
+      <div class="weekday sat">토</div>
+
+      <article class="day weekend outside">
+        <div class="date-line"><div class="date"><strong>21</strong><small>6월</small></div><span class="badge quiet">준비</span></div>
+      </article>
+
+      <article class="day outside">
+        <div class="date-line"><div class="date"><strong>22</strong><small>6월</small></div><span class="badge quiet">준비</span></div>
+      </article>
+
+      <article class="day outside">
+        <div class="date-line"><div class="date"><strong>23</strong><small>6월</small></div><span class="badge quiet">준비</span></div>
+      </article>
+
+      <article class="day">
+        <div class="date-line"><div class="date"><strong>24</strong><small>6월 수</small></div><span class="badge">직보</span></div>
+        <div class="direct-list">
+          <div class="event direct">풍문고 오후 6시~9시</div>
+        </div>
+        <div class="note-list">
+          <div class="event note">다음날 풍문고 수학 시험</div>
+        </div>
+      </article>
+
+      <article class="day">
+        <div class="date-line"><div class="date"><strong>25</strong><small>6월 목</small></div><span class="badge">직보+수학</span></div>
+        <div class="direct-list">
+          <div class="event direct">중동고 오후 12시30분~4시</div>
+          <div class="event direct">경기여고 오후 12시30분~4시</div>
+        </div>
+        <div class="math-list">
+          <div class="event math">풍문고 수학</div>
+        </div>
+        <div class="note-list">
+          <div class="event start">시험 시작: 풍문고, 중동고, 경기여고, 압구정고</div>
+        </div>
+        <div class="active-list">
+          <div class="active-title">시험기간</div>
+          <div class="chips">
+            <span class="school-chip">풍문고</span><span class="school-chip">중동고</span><span class="school-chip">경기여고</span><span class="school-chip">압구정고</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="day">
+        <div class="date-line"><div class="date"><strong>26</strong><small>6월 금</small></div><span class="badge">5개 일정</span></div>
+        <div class="math-list">
+          <div class="event math">중동고 수학</div>
+          <div class="event math">경기여고 수학</div>
+        </div>
+        <div class="note-list">
+          <div class="event start">시험 시작: 양재고</div>
+        </div>
+        <div class="active-list">
+          <div class="active-title">시험기간</div>
+          <div class="chips">
+            <span class="school-chip">풍문고</span><span class="school-chip">중동고</span><span class="school-chip">경기여고</span><span class="school-chip">압구정고</span><span class="school-chip">양재고</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="day weekend">
+        <div class="date-line"><div class="date"><strong>27</strong><small>6월 토</small></div><span class="badge">5개 일정</span></div>
+        <div class="note-list">
+          <div class="event note">수학 시험 없음</div>
+        </div>
+        <div class="active-list">
+          <div class="active-title">시험기간</div>
+          <div class="chips">
+            <span class="school-chip">풍문고</span><span class="school-chip">중동고</span><span class="school-chip">경기여고</span><span class="school-chip">압구정고</span><span class="school-chip">양재고</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="day weekend">
+        <div class="date-line"><div class="date"><strong>28</strong><small>6월 일</small></div><span class="badge">직보 4건</span></div>
+        <div class="direct-list">
+          <div class="event direct">압구정고 오전 10시~오후 2시30분</div>
+          <div class="event direct">양재고 오전 10시~오후 2시30분</div>
+          <div class="event direct">단대부고 오전 10시~오후 2시30분</div>
+          <div class="event direct">중산고 오전 10시~오후 2시30분</div>
+        </div>
+        <div class="note-list">
+          <div class="event note">다음날 수학 시험 집중 대비</div>
+        </div>
+        <div class="active-list">
+          <div class="active-title">시험기간</div>
+          <div class="chips">
+            <span class="school-chip">풍문고</span><span class="school-chip">중동고</span><span class="school-chip">경기여고</span><span class="school-chip">압구정고</span><span class="school-chip">양재고</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="day">
+        <div class="date-line"><div class="date"><strong>29</strong><small>6월 월</small></div><span class="badge">9개 일정</span></div>
+        <div class="math-list">
+          <div class="event math">압구정고 수학</div>
+          <div class="event math">양재고 수학 1교시</div>
+          <div class="event math">단대부고 수학 1교시</div>
+          <div class="event math">중산고 수학 1교시</div>
+        </div>
+        <div class="note-list">
+          <div class="event start">시험 시작: 단대부고, 중산고, 경기고, 청담고</div>
+        </div>
+        <div class="active-list">
+          <div class="active-title">시험기간</div>
+          <div class="chips">
+            <span class="school-chip">풍문고</span><span class="school-chip">중동고</span><span class="school-chip">경기여고</span><span class="school-chip">압구정고</span><span class="school-chip">양재고</span><span class="school-chip">단대부고</span><span class="school-chip">중산고</span><span class="school-chip unknown">경기고</span><span class="school-chip">청담고</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="day">
+        <div class="date-line"><div class="date"><strong>30</strong><small>6월 화</small></div><span class="badge">직보 2건</span></div>
+        <div class="direct-list">
+          <div class="event direct">청담고 오후 6시~9시</div>
+          <div class="event direct">경기고 오후 6시~9시</div>
+        </div>
+        <div class="active-list">
+          <div class="active-title">시험기간</div>
+          <div class="chips">
+            <span class="school-chip">풍문고</span><span class="school-chip">중동고</span><span class="school-chip">경기여고</span><span class="school-chip">압구정고</span><span class="school-chip">양재고</span><span class="school-chip">단대부고</span><span class="school-chip">중산고</span><span class="school-chip unknown">경기고</span><span class="school-chip">청담고</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="day">
+        <div class="date-line"><div class="date"><strong>1</strong><small>7월 수</small></div><span class="badge">9개 일정</span></div>
+        <div class="math-list">
+          <div class="event math">청담고 수학</div>
+          <div class="event math">경기고 수학</div>
+        </div>
+        <div class="note-list">
+          <div class="event end">시험 종료: 풍문고, 중동고, 경기여고</div>
+        </div>
+        <div class="active-list">
+          <div class="active-title">시험기간</div>
+          <div class="chips">
+            <span class="school-chip">풍문고</span><span class="school-chip">중동고</span><span class="school-chip">경기여고</span><span class="school-chip">압구정고</span><span class="school-chip">양재고</span><span class="school-chip">단대부고</span><span class="school-chip">중산고</span><span class="school-chip unknown">경기고</span><span class="school-chip">청담고</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="day">
+        <div class="date-line"><div class="date"><strong>2</strong><small>7월 목</small></div><span class="badge">6개 일정</span></div>
+        <div class="note-list">
+          <div class="event end">시험 종료: 압구정고, 양재고</div>
+        </div>
+        <div class="active-list">
+          <div class="active-title">시험기간</div>
+          <div class="chips">
+            <span class="school-chip">압구정고</span><span class="school-chip">양재고</span><span class="school-chip">단대부고</span><span class="school-chip">중산고</span><span class="school-chip unknown">경기고</span><span class="school-chip">청담고</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="day">
+        <div class="date-line"><div class="date"><strong>3</strong><small>7월 금</small></div><span class="badge">4개 일정</span></div>
+        <div class="note-list">
+          <div class="event end">시험 종료: 단대부고, 중산고, 경기고, 청담고</div>
+        </div>
+        <div class="active-list">
+          <div class="active-title">시험기간</div>
+          <div class="chips">
+            <span class="school-chip">단대부고</span><span class="school-chip">중산고</span><span class="school-chip unknown">경기고</span><span class="school-chip">청담고</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="day weekend outside">
+        <div class="date-line"><div class="date"><strong>4</strong><small>7월 토</small></div><span class="badge quiet">이후</span></div>
+      </article>
+    </section>
+
+    <section class="school-table" aria-label="학교별 일정">
+      <div class="school-row">
+        <div>학교</div>
+        <div>시험 기간</div>
+        <div>수학 시험</div>
+        <div>직보</div>
+        <div>상태</div>
+      </div>
+      <div class="school-row"><div>풍문고</div><div>6월 25일~7월 1일</div><div>6월 25일 목요일</div><div>6월 24일 오후 6시~9시</div><div><span class="status done">확정</span></div></div>
+      <div class="school-row"><div>중동고</div><div>6월 25일~7월 1일</div><div>6월 26일 금요일</div><div>6월 25일 오후 12시30분~4시</div><div><span class="status done">확정</span></div></div>
+      <div class="school-row"><div>경기여고</div><div>6월 25일~7월 1일</div><div>6월 26일 금요일</div><div>6월 25일 오후 12시30분~4시</div><div><span class="status done">확정</span></div></div>
+      <div class="school-row"><div>압구정고</div><div>6월 25일~7월 2일</div><div>6월 29일 월요일</div><div>6월 28일 오전 10시~오후 2시30분</div><div><span class="status done">확정</span></div></div>
+      <div class="school-row"><div>양재고</div><div>6월 26일~7월 2일</div><div>6월 29일 월요일 1교시</div><div>6월 28일 오전 10시~오후 2시30분</div><div><span class="status done">확정</span></div></div>
+      <div class="school-row"><div>단대부고</div><div>6월 29일~7월 3일</div><div>6월 29일 월요일 1교시</div><div>6월 28일 오전 10시~오후 2시30분</div><div><span class="status done">확정</span></div></div>
+      <div class="school-row"><div>중산고</div><div>6월 29일~7월 3일</div><div>6월 29일 월요일 1교시</div><div>6월 28일 오전 10시~오후 2시30분</div><div><span class="status done">확정</span></div></div>
+      <div class="school-row"><div>청담고</div><div>6월 29일~7월 3일</div><div>7월 1일 수요일</div><div>6월 30일 오후 6시~9시</div><div><span class="status done">확정</span></div></div>
+      <div class="school-row"><div>경기고</div><div>6월 29일~7월 3일</div><div>7월 1일 수요일</div><div>6월 30일 오후 6시~9시</div><div><span class="status done">확정</span></div></div>
+    </section>
+
+    <footer>
+      <div>업데이트: 2026년 6월 13일</div>
+      <div>수학 시험 미정: 없음</div>
+    </footer>
+  </main>
+</body>
+</html>
