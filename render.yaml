@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: school-exam-calendar
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: .
+    autoDeployTrigger: commit
