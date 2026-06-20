@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="utf-8">
@@ -866,6 +866,35 @@
       font-size: 11.5px;
     }
 
+    .today-pill {
+      width: 100%;
+      justify-content: center;
+      color: #111827;
+      border-color: rgba(17, 24, 39, 0.18);
+      background:
+        linear-gradient(135deg, #fff8d8 0%, #ffffff 55%, #e7fbf8 100%);
+      box-shadow:
+        inset 0 -2px 0 rgba(247, 255, 84, 0.46),
+        0 8px 18px rgba(17, 24, 39, 0.08);
+    }
+
+    .today-label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 20px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      color: #ffffff;
+      background: #111827;
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    #today-date {
+      font-variant-numeric: tabular-nums;
+    }
+
     @media (max-width: 920px) {
       main {
         width: calc(100% - 18px);
@@ -913,6 +942,7 @@
         <div class="subtitle">6월 24일 수요일 ~ 7월 3일 금요일</div>
       </div>
       <div class="summary" aria-label="요약">
+        <div class="summary-pill today-pill"><span class="today-label">오늘</span><time id="today-date" datetime="">날짜 확인 중</time></div>
         <div class="summary-pill"><span class="dot math"></span>수학 확정 9건</div>
         <div class="summary-pill"><span class="dot direct"></span>직보 9건</div>
         <div class="summary-pill"><span class="dot"></span>시험기간 9건</div>
@@ -1133,5 +1163,31 @@
       <div>수학 시험 미정: 없음</div>
     </footer>
   </main>
+  <script>
+    (() => {
+      const todayDate = document.getElementById("today-date");
+      if (!todayDate) return;
+
+      const now = new Date();
+      const dateParts = new Intl.DateTimeFormat("en", {
+        timeZone: "Asia/Seoul",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(now).reduce((parts, part) => {
+        if (part.type !== "literal") parts[part.type] = part.value;
+        return parts;
+      }, {});
+
+      todayDate.textContent = new Intl.DateTimeFormat("ko-KR", {
+        timeZone: "Asia/Seoul",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "long"
+      }).format(now);
+      todayDate.setAttribute("datetime", `${dateParts.year}-${dateParts.month}-${dateParts.day}`);
+    })();
+  </script>
 </body>
 </html>
